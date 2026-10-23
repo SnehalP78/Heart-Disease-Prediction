@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="/static/style.css?v=4">
+
+    <style>
+    .result-page {
+        max-width: 650px;
+        margin: 35px auto;
+        padding: 30px 20px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        box-shadow: 0 18px 50px rgba(60, 83, 140, 0.15);
+    }
+
+    .result-heart {
+        font-size: 54px;
+        margin: 5px;
+    }
+
+    .score-circle {
+        --score: 0%;
+        width: 180px;
+        height: 180px;
+        margin: 25px auto;
+        border-radius: 50%;
+        background: conic-gradient(
+            #ed4168 var(--score),
+            #e8eaf5 var(--score)
+        );
+        display: grid;
+        place-items: center;
+        box-shadow: 0 10px 28px rgba(139, 92, 246, 0.18);
+    }
+
+    .score-inner {
+        width: 145px;
+        height: 145px;
+        border-radius: 50%;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .score-inner .score {
+        margin: 0;
+        font-size: 34px;
+        font-weight: 800;
+        color: #7656d6;
+    }
+
+    .score-caption {
+        margin-top: 4px;
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .result-page h2 {
+        color: #344568;
+    }
+
+    .result-message {
+        color: #344568;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 13px 24px;
+        border-radius: 12px;
+        background: linear-gradient(100deg, #ed4168, #7656d6);
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .disclaimer {
+        margin-top: 24px;
+        padding: 14px;
+        background: #fff5df;
+        border-radius: 12px;
+        color: #725b2b;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 480px) {
+        .score-circle {
+            width: 155px;
+            height: 155px;
+        }
+
+        .score-inner {
+            width: 125px;
+            height: 125px;
+        }
+
+        .score-inner .score {
+            font-size: 29px;
+        }
+    }
+</style>
+</head>
+
+<body>
+    <h1>❤️ Prediction Result</h1>
+
+    <main class="result-page">
+        <div class="result-heart">💗</div>
+        <h2>Your Model Result</h2>
+
+        
+        <div class="score-circle" id="scoreCircle">
+        <div class="score-inner">
+        <div class="score" id="score">--%</div>
+        <div class="score-caption">Model confidence</div>
+    </div>
+</div>
+
+
+        <p class="result-message" id="message">
+            Loading your result...
+        </p>
+
+        <div class="disclaimer">
+            <strong>Important:</strong> This percentage is the model's
+            confidence in its selected class, not a medically validated
+            heart disease risk percentage. This educational demo cannot
+            diagnose heart disease. Please consult a qualified healthcare
+            professional for medical concerns.
+        </div>
+
+        <a href="/" class="back-button">← Back to Patient Form</a>
+    </main>
+
+    <script>
+        const savedResult = sessionStorage.getItem("heartPrediction");
+
+        if (!savedResult) {
+            document.getElementById("message").textContent =
+                "No result found. Please return to the form and predict again.";
+        } else {
+            const data = JSON.parse(savedResult);
+            const score = Math.max(0, Math.min(100, Number(data.score) || 0));
+
+            document.getElementById("score").textContent = score.toFixed(2) + "%";
+            document.getElementById("scoreCircle")
+            .style.setProperty("--score", score + "%");
+            document.getElementById("message").textContent =
+                (data.result || "Prediction completed") + ".";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <link rel="stylesheet" href="/static/style.css?v=3">
+</head>
+<body>
+    <h1><span class="heart-decoration">❤️</span> Heart Disease Prediction</h1>
+
+    <div class="ecg-line" aria-label="Heartbeat decoration">
+        <svg viewBox="0 0 300 45" width="220" height="45" role="img">
+            <path d="M5 23 H85 L100 23 L112 8 L128 37 L143 14 L155 23 H205 L220 23 L232 8 L248 37 L263 23 H295"
+                fill="none" stroke="#ed4168" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+    <p>Enter patient details below</p>
+
+    
+<form id="predictionForm">
+    <h2>👤 Patient Information</h2>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Age (years)</label>
+            <input type="number" name="age" min="1" max="120" placeholder="Enter age" required>
+        </div>
+
+        <div class="form-group">
+            <label>Sex</label>
+            <select name="sex" required>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Chest Pain Type (cp)</label>
+            <select name="cp" required>
+                <option value="0">Type 0</option>
+                <option value="1">Type 1</option>
+                <option value="2">Type 2</option>
+                <option value="3">Type 3</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Resting Blood Pressure</label>
+            <input type="number" name="trestbps" min="1" max="300" placeholder="e.g. 120" required>
+        </div>
+
+        <div class="form-group">
+            <label>Cholesterol (mg/dl)</label>
+            <input type="number" name="chol" min="1" max="700" placeholder="Enter value" required>
+        </div>
+
+        <div class="form-group">
+            <label>Fasting Blood Sugar</label>
+            <select name="fbs" required>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+    </div>
+
+    <h2>❤️ Heart Test Measurements</h2>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Resting ECG</label>
+            <select name="restecg" required>
+                <option value="0">Type 0</option>
+                <option value="1">Type 1</option>
+                <option value="2">Type 2</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Maximum Heart Rate</label>
+            <input type="number" name="thalach" min="1" max="300" placeholder="Enter value" required>
+        </div>
+
+        <div class="form-group">
+            <label>Exercise-Induced Angina</label>
+            <select name="exang" required>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Oldpeak</label>
+            <input type="number" name="oldpeak" min="0" max="10" step="0.1" placeholder="e.g. 1.0" required>
+        </div>
+
+        <div class="form-group">
+            <label>Slope</label>
+            <select name="slope" required>
+                <option value="0">Type 0</option>
+                <option value="1">Type 1</option>
+                <option value="2">Type 2</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Number of Major Vessels (ca)</label>
+            <select name="ca" required>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Thal</label>
+            <select name="thal" required>
+                <option value="0">Type 0</option>
+                <option value="1">Type 1</option>
+                <option value="2">Type 2</option>
+                <option value="3">Type 3</option>
+            </select>
+        </div>
+    </div>
+
+   
+<div class="form-buttons">
+    <button type="reset" class="clear-btn">↺ Clear Form</button>
+    <button type="submit">❤️ Predict Heart Disease</button>
+</div>
+</form>
+
+
+    <p id="result" aria-live="polite"></p>
+
+    <script>
+        const form = document.getElementById("predictionForm");
+        const result = document.getElementById("result");
+
+        form.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            result.textContent = "⏳ Analyzing patient data... Please wait.";
+            result.style.display = "block";
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            
+            submitButton.textContent = "⏳ Analyzing...";
+            const formData = new FormData(form);
+            const patient = {};
+
+            for (const [key, value] of formData.entries()) {
+                patient[key] = Number(value);
+            }
+
+            try {
+                const response = await fetch("/api/predict", {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json"
+        },
+        body: JSON.stringify(patient)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.detail || "Prediction request failed."
+        );
+    }
+
+    sessionStorage.setItem("heartPrediction", JSON.stringify(data));
+    window.location.href = "/static/result.html";
+
+} catch (error) {
+    submitButton.disabled = false;
+    submitButton.textContent = "❤️ Predict Heart Disease";
+    result.textContent = "Error: " + error.message;
+}
+ });
+    </script>
+</body>
+</html>
