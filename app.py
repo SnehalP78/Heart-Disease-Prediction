@@ -15,8 +15,9 @@ app = FastAPI(title="Heart Disease Prediction")
 
 app.mount(
     "/static",
-    StaticFiles(directory=str(PUBLIC_DIR)),
+    StaticFiles(directory=str(PUBLIC_DIR), check_dir=False),
     name="static"
+)
 )
 
 # Load the trained model and its feature names
