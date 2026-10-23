@@ -18,7 +18,7 @@ app.mount(
     StaticFiles(directory=str(PUBLIC_DIR), check_dir=False),
     name="static"
 )
-)
+
 
 # Load the trained model and its feature names
 model = joblib.load(MODEL_DIR / "heart_model.pkl")
